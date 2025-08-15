@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"math/rand"
+	"os"
 	"time"
 
 	"urlx/shortener"
@@ -52,6 +53,10 @@ func main() {
 		c.Status(204)
 	})
 
-	log.Println("Listening on :8080")
-	r.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Printf("Listening on :%s", port)
+	r.Run(":" + port)
 }
