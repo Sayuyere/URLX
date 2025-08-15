@@ -23,6 +23,19 @@ func NewPostgresStore() (*PostgresStore, error) {
 		return nil, err
 	}
 	logger.Debug("Connected to Postgres successfully")
+
+	// Create schema if it doesn't exist
+	schema := `CREATE TABLE IF NOT EXISTS urls (
+		short VARCHAR(32) PRIMARY KEY,
+		long TEXT NOT NULL
+	);`
+	_, err = pool.Exec(context.Background(), schema)
+	if err != nil {
+		logger.Error("Failed to create schema", "error", err)
+		return nil, err
+	}
+	logger.Debug("Database schema ensured")
+
 	return &PostgresStore{pool: pool}, nil
 }
 
