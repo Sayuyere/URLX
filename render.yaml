@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: urlx
+    env: go
+    buildCommand: go build -o urlx main.go
+    startCommand: ./urlx
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8080
