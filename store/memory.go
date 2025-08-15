@@ -1,6 +1,9 @@
 package store
 
-import "sync"
+import (
+	"sync"
+	"urlx/logging"
+)
 
 type MemoryStore struct {
 	data  map[string]string
@@ -12,12 +15,16 @@ func NewMemoryStore() *MemoryStore {
 }
 
 func (m *MemoryStore) Set(short, long string) {
+	logger := logging.NewLogger()
+	logger.Debug("Set short URL (memory store)", "short", short, "long", long)
 	m.mutex.Lock()
 	m.data[short] = long
 	m.mutex.Unlock()
 }
 
 func (m *MemoryStore) Get(short string) (string, bool) {
+	logger := logging.NewLogger()
+	logger.Debug("Get short URL (memory store)", "short", short)
 	m.mutex.RLock()
 	long, ok := m.data[short]
 	m.mutex.RUnlock()
@@ -25,6 +32,8 @@ func (m *MemoryStore) Get(short string) (string, bool) {
 }
 
 func (m *MemoryStore) Delete(short string) {
+	logger := logging.NewLogger()
+	logger.Debug("Delete short URL (memory store)", "short", short)
 	m.mutex.Lock()
 	delete(m.data, short)
 	m.mutex.Unlock()
