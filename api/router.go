@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"os"
 
 	"urlx/shortener"
 	"urlx/store"
@@ -19,6 +20,16 @@ type ShortenResponse struct {
 
 func SetupRouter(s store.Store, shortenerSvc shortener.Shortener) *gin.Engine {
 	r := gin.Default()
+
+	r.GET("/", func(c *gin.Context) {
+		// Serve the UI HTML file from the ui directory
+		uiPath := "ui/index.html"
+		if _, err := os.Stat(uiPath); err == nil {
+			c.File(uiPath)
+			return
+		}
+		c.String(http.StatusNotFound, "UI not found")
+	})
 
 	r.GET("/healthz", func(c *gin.Context) {
 		c.Status(http.StatusOK)

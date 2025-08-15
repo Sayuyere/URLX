@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URLX - URL Shortener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 60px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #0001;
+            padding: 32px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            margin: 16px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .error {
+            color: #d00;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>URLX Shortener</h1>
+        <form id="shorten-form">
+            <input type="url" id="url-input" placeholder="Paste your long URL here..." required />
+            <button type="submit">Shorten URL</button>
+        </form>
+        <div class="result" id="result"></div>
+        <div class="error" id="error"></div>
+    </div>
+    <script>
+        document.getElementById('shorten-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            document.getElementById('result').textContent = '';
+            document.getElementById('error').textContent = '';
+            const url = document.getElementById('url-input').value;
+            try {
+                const res = await fetch('/shorten', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                if (!res.ok) throw new Error('Failed to shorten URL');
+                const data = await res.json();
+                const shortUrl = `${window.location.origin}/${data.short}`;
+                document.getElementById('result').innerHTML = `<b>Short URL:</b> <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+            } catch (err) {
+                document.getElementById('error').textContent = err.message;
+            }
+        });
+    </script>
+</body>
+
+</html>
