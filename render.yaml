@@ -6,9 +6,12 @@ services:
     startCommand: ./urlx
     plan: free
     envVars:
-      - fromEnvGroup: urlx-db-env
-    databases:
-      - name: urlx-db
-        plan: free
-        databaseName: urlx
-        user: urlx_user
+      - key: DATABASE_UR
+        fromDatabase:
+          name: urlx-db-env
+          property: connectionString
+databases:
+  - name: urlx-db
+    plan: free
+    databaseName: urlx
+    user: urlx_user
