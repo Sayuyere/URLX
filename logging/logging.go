@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type Logger struct {
@@ -17,7 +18,9 @@ var (
 
 func NewLogger() *Logger {
 	once.Do(func() {
-		zapLogger, _ := zap.NewProduction()
+		cfg := zap.NewProductionConfig()
+		cfg.Level = zap.NewAtomicLevelAt(zapcore.DebugLevel)
+		zapLogger, _ := cfg.Build()
 		loggerInstance = &Logger{zapLogger.Sugar()}
 	})
 	return loggerInstance
