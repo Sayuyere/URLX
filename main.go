@@ -27,6 +27,10 @@ func main() {
 
 	r := gin.Default()
 
+	r.GET("/healthz", func(c *gin.Context) {
+		c.Status(200)
+	})
+
 	r.POST("/shorten", func(c *gin.Context) {
 		var req ShortenRequest
 		if err := c.ShouldBindJSON(&req); err != nil || req.URL == "" {
