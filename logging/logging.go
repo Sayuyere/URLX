@@ -20,7 +20,9 @@ func NewLogger() *Logger {
 	once.Do(func() {
 		cfg := zap.NewProductionConfig()
 		cfg.Level = zap.NewAtomicLevelAt(zapcore.DebugLevel)
-		zapLogger, _ := cfg.Build()
+		cfg.EncoderConfig.CallerKey = "caller"
+		cfg.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+		zapLogger, _ := cfg.Build(zap.AddCaller(), zap.AddCallerSkip(1))
 		loggerInstance = &Logger{zapLogger.Sugar()}
 	})
 	return loggerInstance
@@ -32,4 +34,8 @@ func (l *Logger) Info(msg string, args ...interface{}) {
 
 func (l *Logger) Error(msg string, args ...interface{}) {
 	l.Errorf(msg, args...)
+}
+
+func (l *Logger) Debug(msg string, args ...interface{}) {
+	l.Debugf(msg, args...)
 }
