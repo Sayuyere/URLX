@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"urlx/api"
+	"urlx/logging"
 	"urlx/shortener"
 	"urlx/store"
 
@@ -18,7 +19,8 @@ func TestShortenAndRedirect(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	s := store.NewMemoryStore()
 	shortenerSvc := shortener.NewSimpleShortener()
-	r := api.SetupRouter(s, shortenerSvc)
+	logger := logging.NewLogger()
+	r := api.SetupRouter(s, shortenerSvc, logger)
 
 	// Test shorten
 	body := bytes.NewBufferString(`{"url":"https://example.com"}`)
@@ -50,7 +52,8 @@ func TestDelete(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	s := store.NewMemoryStore()
 	shortenerSvc := shortener.NewSimpleShortener()
-	r := api.SetupRouter(s, shortenerSvc)
+	logger := logging.NewLogger()
+	r := api.SetupRouter(s, shortenerSvc, logger)
 	short := "abc123"
 	s.Set(short, "https://example.com")
 

@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"urlx/logging"
 	"urlx/shortener"
 	"urlx/store"
 )
@@ -23,7 +24,8 @@ func TestUIRootServesHTML(t *testing.T) {
 
 	s := store.NewMemoryStore()
 	shortenerSvc := shortener.NewSimpleShortener()
-	r := SetupRouter(s, shortenerSvc)
+	logger := logging.NewLogger()
+	r := SetupRouter(s, shortenerSvc, logger)
 
 	req, _ := http.NewRequest(http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
@@ -42,7 +44,8 @@ func TestUIRootNotFound(t *testing.T) {
 
 	s := store.NewMemoryStore()
 	shortenerSvc := shortener.NewSimpleShortener()
-	r := SetupRouter(s, shortenerSvc)
+	logger := logging.NewLogger()
+	r := SetupRouter(s, shortenerSvc, logger)
 
 	req, _ := http.NewRequest(http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
