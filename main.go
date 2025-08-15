@@ -13,7 +13,12 @@ import (
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	var s store.Store = store.NewMemoryStore()
+	var s store.Store
+	ps, err := store.NewPostgresStore()
+	if err != nil {
+		log.Fatalf("failed to connect to postgres: %v", err)
+	}
+	s = ps
 	var shortenerSvc shortener.Shortener = shortener.NewSimpleShortener()
 
 	r := api.SetupRouter(s, shortenerSvc)
