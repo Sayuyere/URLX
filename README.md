@@ -71,5 +71,11 @@ GET /healthz
 - Uses Zap for all logs (debug/info/error)
 - All storage and API operations are logged
 
+## Note on Logging Performance
+
+- Logging may be slower than expected because the Grafana Loki logging endpoint is in India, while the Render.com service is hosted in the USA.
+- Each request blocks until the log is sent to Grafana Cloud (no batching or async logging is used).
+- For production, consider batching logs or using a background worker to avoid blocking request handling.
+
 ## License
 MIT
