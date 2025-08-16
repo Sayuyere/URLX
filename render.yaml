@@ -10,8 +10,7 @@ services:
         fromDatabase:
           name: urlx-db
           property: connectionString
-    envVarsFrom:
-      - groupName: Logging System   # This will import all environment variables from the "Logging System" env group
+      - fromGroup: Logging System
 
 databases:
   - name: urlx-db
