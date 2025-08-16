@@ -78,5 +78,12 @@ func SetupRouter(s store.Store, shortenerSvc shortener.Shortener, logger *loggin
 		c.Status(http.StatusNoContent)
 	})
 
+	r.GET("/delete/:short", func(c *gin.Context) {
+		short := c.Param("short")
+		s.Delete(short)
+		logger.Info("Deleted short URL (GET)", "short", short)
+		c.Status(http.StatusNoContent)
+	})
+
 	return r
 }
