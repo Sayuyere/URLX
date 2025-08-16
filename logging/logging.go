@@ -13,7 +13,8 @@ import (
 
 type Logger struct {
 	*zap.SugaredLogger
-	loki *LokiClient
+	loki    *LokiClient
+	batcher *LokiBatcher
 }
 
 var (
@@ -34,7 +35,8 @@ func NewLogger() *Logger {
 		)
 		zapLogger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 		lokiClient := NewLokiClient()
-		loggerInstance = &Logger{zapLogger.Sugar(), lokiClient}
+		batcher := NewLokiBatcher(lokiClient, 10, 2*time.Second) // batch size 10, flush every 2s
+		loggerInstance = &Logger{zapLogger.Sugar(), lokiClient, batcher}
 	})
 	return loggerInstance
 }
@@ -74,32 +76,32 @@ func itoa(i int) string {
 
 func (l *Logger) Info(msg string, args ...interface{}) {
 	l.Infof(msg, args...)
-	if l.loki != nil {
+	if l.batcher != nil {
 		jsonLog := encodeZapJSON("info", msg, 2, args...)
-		l.loki.SendLog(jsonLog)
+		l.batcher.SendLog(jsonLog, "info", l.loki.serviceName, nil)
 	}
 }
 
 func (l *Logger) Error(msg string, args ...interface{}) {
 	l.Errorf(msg, args...)
-	if l.loki != nil {
+	if l.batcher != nil {
 		jsonLog := encodeZapJSON("error", msg, 2, args...)
-		l.loki.SendLog(jsonLog)
+		l.batcher.SendLog(jsonLog, "error", l.loki.serviceName, nil)
 	}
 }
 
 func (l *Logger) Debug(msg string, args ...interface{}) {
 	l.Debugf(msg, args...)
-	if l.loki != nil {
+	if l.batcher != nil {
 		jsonLog := encodeZapJSON("debug", msg, 2, args...)
-		l.loki.SendLog(jsonLog)
+		l.batcher.SendLog(jsonLog, "debug", l.loki.serviceName, nil)
 	}
 }
 
 func (l *Logger) Warn(msg string, args ...interface{}) {
 	l.Warnf(msg, args...)
-	if l.loki != nil {
+	if l.batcher != nil {
 		jsonLog := encodeZapJSON("warn", msg, 2, args...)
-		l.loki.SendLog(jsonLog)
+		l.batcher.SendLog(jsonLog, "warn", l.loki.serviceName, nil)
 	}
 }
