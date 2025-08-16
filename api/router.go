@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"urlx/logging"
 	"urlx/shortener"
@@ -26,10 +27,20 @@ func requestLogger(logger *logging.Logger) gin.HandlerFunc {
 	}
 }
 
+func timingLogger(logger *logging.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		start := time.Now()
+		c.Next()
+		dur := time.Since(start)
+		logger.Info("Request processed", "method", c.Request.Method, "path", c.Request.URL.Path, "duration_ms", dur.Milliseconds())
+	}
+}
+
 func SetupRouter(s store.Store, shortenerSvc shortener.Shortener, logger *logging.Logger) *gin.Engine {
 	r := gin.Default()
 
 	r.Use(requestLogger(logger))
+	r.Use(timingLogger(logger))
 
 	r.GET("/", func(c *gin.Context) {
 		logger.Info("Serving UI page")
