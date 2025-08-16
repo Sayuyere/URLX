@@ -19,8 +19,17 @@ type ShortenResponse struct {
 	Short string `json:"short"`
 }
 
+func requestLogger(logger *logging.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		logger.Info("Incoming request", "method", c.Request.Method, "path", c.Request.URL.Path, "remote", c.ClientIP())
+		c.Next()
+	}
+}
+
 func SetupRouter(s store.Store, shortenerSvc shortener.Shortener, logger *logging.Logger) *gin.Engine {
 	r := gin.Default()
+
+	r.Use(requestLogger(logger))
 
 	r.GET("/", func(c *gin.Context) {
 		logger.Info("Serving UI page")
